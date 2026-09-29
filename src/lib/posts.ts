@@ -17,7 +17,7 @@ export const categoryHref = (category: string) => `/category/${categorySlug(cate
 
 export const postSlug = (post: Post) => post.id.replace(/\/index$/, "");
 
-export const postHref = (post: Post) => `/post/${postSlug(post)}/`;
+export const postHref = (post: Post) => `blog/post/${postSlug(post)}/`;
 
 export const byNewest = (a: Post, b: Post) => b.data.date.getTime() - a.data.date.getTime();
 

@@ -18,8 +18,24 @@ const searchFallback = posts.slice(0, 12).map((post) => ({
   date: formatDate(post.data.date),
   reading: readingLabel(post),
 }));
-const isCurrentPath = (href: string) =>
-  currentPath === href || (href !== "/" && currentPath.startsWith(href));
+const normalize = (path: string) => path.replace(/\/+$/, '') || '/';
+
+const isCurrentPath = (href: string) => {
+  const current = normalize(currentPath);
+  const target = normalize(href);
+
+  // 1. Exact match (e.g. /blog matches /blog, /blog/posts matches /blog/posts)
+  if (current === target) return true;
+
+  // 2. Highlight "BLOG" only on single posts (/blog/post/slug-name)
+  // Notice the trailing slash so "posts" is never matched!
+  if (target === '/blog' && (currentPath === '/blog/post' || currentPath.startsWith('/blog/post/'))) {
+    return true;
+  }
+
+  // 3. Hierarchical match for paginated archive pages (/blog/posts/2, /blog/posts/3)
+  return target !== '/' && target !== '/blog' && current.startsWith(`${target}/`);
+};
 ---
 
 <header class="site-header outer">
