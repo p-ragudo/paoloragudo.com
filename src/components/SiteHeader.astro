@@ -29,7 +29,7 @@ const isCurrentPath = (href: string) => {
 
   // 2. Highlight "BLOG" only on single posts (/blog/post/slug-name)
   // Notice the trailing slash so "posts" is never matched!
-  if (target === '/blog' && (currentPath === '/blog/post' || currentPath.startsWith('/blog/post/'))) {
+  if (target === '/blog' && (currentPath === '/blog/posts' || currentPath.startsWith('/blog/posts/'))) {
     return true;
   }
 
