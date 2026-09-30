@@ -52,4 +52,8 @@ export const navigation = [
 ];
 
 /** Secondary navigation rendered in the footer. */
-export const footerNavigation = [];
+export const footerNavigation = [
+  { label: "Contact", href: "/contact/" },
+  { label: "Privacy", href: "/privacy/" },
+  { label: "RSS", href: "/rss.xml" },
+];

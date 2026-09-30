@@ -1,0 +1,49 @@
+---
+interface Props {
+  title: string;
+  id?: string;
+}
+
+const { title, id } = Astro.props;
+---
+
+<div class="section-heading-root" id={id}>
+  <div class="section-heading-inner">
+    <h2 class="section-heading-title">{title}</h2>
+  </div>
+</div>
+
+<style>
+  .section-heading-root {
+    margin-bottom: -0.1rem;
+  }
+
+  .section-heading-inner {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 0.75rem;
+  }
+
+  /* Exactly inherits the hero title typography style, scaled down */
+  .section-heading-title {
+    margin: 0;
+    font-family: var(--font-display, "Geist", system-ui, sans-serif);
+    font-weight: 600;
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: var(--foreground);
+    text-wrap: balance;
+  }
+
+  /* Subtle Monograph index tag */
+  .section-heading-number {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    user-select: none;
+    letter-spacing: 0.05em;
+  }
+</style>

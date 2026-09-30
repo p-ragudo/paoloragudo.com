@@ -1,0 +1,27 @@
+---
+interface Props {
+  text?: string;
+  as?: "h1" | "h2" | "h3" | "h4" | "p" | "span";
+  class?: string;
+}
+
+const { text, as: Component = "h1", class: className = "" } = Astro.props;
+---
+
+<Component class:list={["monograph-title", className]}>
+  {text ? text : <slot />}
+</Component>
+
+<style>
+  .monograph-title {
+    margin: 0;
+    font-family: var(--font-display, "Geist", system-ui, sans-serif);
+    font-weight: 600;
+    font-size: clamp(2.4rem, 6.5vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--foreground);
+    text-wrap: balance;
+    word-break: break-word;
+  }
+</style>
