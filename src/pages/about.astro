@@ -24,33 +24,15 @@ const authors = getAllAuthors(allPosts);
       </header>
 
       <div class="prose">
-        <h2>What gets published here</h2>
-        <p>
-          Long-form notes on building software: the decision behind a change, what it cost, and what
-          would be done differently next time. Posts are written to be read once, carefully, rather
-          than skimmed.
+        <h2 class="mb-0 pb-00">About Me</h2>
+        <p class="mt-0 pt-0">
+          I'm a software engineer that wants to improve their skills and document the journey. I write code every single day (except Sundays!)
+          and try to get a little bit better than yesterday. I hope to be able to build a lot of projects and write a lot about my work and things
+          that are interesting to me, and hope to share it with you!
         </p>
 
-        <h2>How it is written</h2>
-        <p>
-          Every post aims to be reproducible and honest about trade-offs. If something did not work,
-          that goes in too. Corrections are made in place, with the update date shown at the top of
-          the post.
-        </p>
-
-        <h2>Who writes it</h2>
-        <ul>
-          {
-            authors.map((author) => (
-              <li>
-                <a href={`/author/${authorSlug(author.name)}/`}>{author.name}</a> — {author.role} ({author.posts.length} {author.posts.length === 1 ? "post" : "posts"})
-              </li>
-            ))
-          }
-        </ul>
-
-        <h2>Get in touch</h2>
-        <p>
+        <h2 class="mb-0 pb-00">Get in touch</h2>
+        <p class="mt-0 pt-0">
           Questions, corrections, and requests are welcome through the <a href="/contact/">contact page</a>.
         </p>
         {

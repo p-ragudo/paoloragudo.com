@@ -17,7 +17,7 @@ const hasMore = rest.length > feed.length;
 
 <BaseLayout>
   <SiteHeader posts={allPosts} />
-  <main id="content" class="outer">
+  <main id="content" class="outer main-container">
     <div class="inner">
       <h1 class="sr-only">{siteConfig.name} — {siteConfig.tagline}</h1>
 
@@ -65,3 +65,9 @@ const hasMore = rest.length > feed.length;
   </main>
   <SiteFooter />
 </BaseLayout>
+
+<style>
+  .main-container {
+    min-height: calc(100vh - 220px);
+  }
+</style>
