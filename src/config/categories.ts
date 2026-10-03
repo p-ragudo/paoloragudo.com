@@ -8,6 +8,8 @@
  * sidebar.
  */
 export const categories = [
+  "Cloud",
+  "Development",
   "Engineering",
   "Reliability"
 ] as const;
