@@ -40,7 +40,9 @@ const isCurrentPath = (href: string) => {
 
 <header class="site-header outer">
   <div class="inner flex items-center justify-between gap-6 py-2.5">
-    <a href="/" class="wordmark">{siteConfig.name}</a>
+    <a href="/" class="wordmark inline-flex shrink-0" aria-label="Home">
+      <img src="/favicon.svg" alt="" class="h-8 w-8" />
+    </a>
 
     <div class="flex items-center gap-5">
       <nav class="hidden items-center gap-6 md:flex" aria-label="Primary navigation">
@@ -167,8 +169,10 @@ const isCurrentPath = (href: string) => {
   aria-label="Navigation menu"
   hidden
 >
-  <div class="flex items-center justify-between gap-6 border-b border-border px-6 py-4">
-    <a href="/" class="wordmark">{siteConfig.name}</a>
+  <div class="flex items-center justify-between border-b border-border px-6 py-4">
+    <a href="/" class="wordmark inline-flex shrink-0" aria-label="Home">
+      <img src="/favicon.svg" alt="" class="h-8 w-8" />
+    </a>
     <button type="button" class="icon-btn" data-mobile-menu-close aria-label="Close navigation menu">
       <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
         <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
