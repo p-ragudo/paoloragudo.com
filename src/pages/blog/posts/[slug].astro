@@ -37,7 +37,9 @@ interface Props {
 }
 
 const { post, allPosts } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+const tableOfContents = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const hasTableOfContents = tableOfContents.length > 0;
 const mdxComponents = { Callout, CodeGroup, CodeGroupItem };
 const data = post.data;
 const related = getRelated(allPosts, post);
@@ -89,8 +91,11 @@ const structuredData = {
 >
   <SiteHeader posts={allPosts} />
   <main id="content" class="outer">
-    <article>
-      <header class="canvas pt-10 md:pt-14">
+    <article class:list={tableOfContents.length > 0 ? ["article-has-toc"] : []}>
+      <header class="article-header canvas pt-10 md:pt-14">
+        <a href="/blog/" class="nav-link link-nudge mb-5 inline-flex items-center gap-1">
+          <span class="link-nudge__arrow link-nudge__arrow--prev" aria-hidden="true">&larr;</span> Blog
+        </a>
         <p class="meta post-meta">
           <span class="post-meta__byline">
             By <a href={authorHref} class="link-sweep post-meta__link">{data.author.name}</a> in{" "}
@@ -162,40 +167,61 @@ const structuredData = {
         </figure>
       )}
 
-      <div class="prose canvas mt-12">
-        <Content components={mdxComponents} />
-      </div>
-
-      {(newer || older) && (
-        <footer class="canvas mt-16 border-t border-border pt-8">
-          <nav class="grid gap-8 sm:grid-cols-2" aria-label="Post navigation">
-            <div>
-              {older && (
-                <a href={postHref(older)} class="link-title link-nudge">
-                  <span class="eyebrow">
-                    <span class="link-nudge__arrow link-nudge__arrow--prev">&larr;</span> Previous
-                  </span>
-                  <span class="link-title__text mt-2 block font-semibold leading-snug">{older.data.title}</span>
-                </a>
-              )}
-            </div>
-            <div class="sm:text-right">
-              {newer && (
-                <a href={postHref(newer)} class="link-title link-nudge">
-                  <span class="eyebrow">
-                    Next <span class="link-nudge__arrow link-nudge__arrow--next">&rarr;</span>
-                  </span>
-                  <span class="link-title__text mt-2 block font-semibold leading-snug">{newer.data.title}</span>
-                </a>
-              )}
-            </div>
+      <div class:list={["article-reading-layout inner", tableOfContents.length > 0 && "article-reading-layout--with-toc"]}>
+        {tableOfContents.length > 0 && (
+          <nav class="article-toc" aria-labelledby="article-toc-heading">
+            <h2 id="article-toc-heading" class="eyebrow">On this page</h2>
+            <ol>
+              {tableOfContents.map((heading, index) => (
+                <li class:list={heading.depth === 3 ? ["article-toc-item--nested"] : []}>
+                  <a
+                    href={`#${heading.slug}`}
+                    data-toc-link
+                    aria-current={index === 0 ? "location" : undefined}
+                  >
+                    {heading.text}
+                  </a>
+                </li>
+              ))}
+            </ol>
           </nav>
-        </footer>
-      )}
+        )}
+
+        <div class="prose canvas article-body mt-12">
+          <Content components={mdxComponents} />
+        </div>
+
+        {(newer || older) && (
+          <footer class="canvas article-navigation mt-16 border-t border-border pt-8">
+            <nav class="grid gap-8 sm:grid-cols-2" aria-label="Post navigation">
+              <div>
+                {older && (
+                  <a href={postHref(older)} class="link-title link-nudge">
+                    <span class="eyebrow">
+                      <span class="link-nudge__arrow link-nudge__arrow--prev">&larr;</span> Previous
+                    </span>
+                    <span class="link-title__text mt-2 block font-semibold leading-snug">{older.data.title}</span>
+                  </a>
+                )}
+              </div>
+              <div class="sm:text-right">
+                {newer && (
+                  <a href={postHref(newer)} class="link-title link-nudge">
+                    <span class="eyebrow">
+                      Next <span class="link-nudge__arrow link-nudge__arrow--next">&rarr;</span>
+                    </span>
+                    <span class="link-title__text mt-2 block font-semibold leading-snug">{newer.data.title}</span>
+                  </a>
+                )}
+              </div>
+            </nav>
+          </footer>
+        )}
+      </div>
     </article>
 
     {related.length > 0 && (
-      <section class="canvas mt-[var(--space-section)]" aria-labelledby="keep-reading">
+      <section class="canvas article-related mt-[var(--space-section)]" aria-labelledby="keep-reading">
         <h2 id="keep-reading" class="section-title">Keep reading</h2>
         <div class="grid gap-7">
           {related.map((item) => <PostCard post={item} variant="compact" headingLevel="h3" />)}
@@ -263,112 +289,198 @@ const structuredData = {
     });
   </script>
 
+  <script is:inline>
+    const tocLinks = Array.from(document.querySelectorAll("[data-toc-link]"));
+
+    if (tocLinks.length > 0) {
+      const sections = tocLinks
+        .map((link) => ({
+          link,
+          section: document.getElementById(decodeURIComponent(link.hash.slice(1))),
+        }))
+        .filter((item) => item.section);
+
+      const updateCurrentSection = () => {
+        let current = sections[0];
+
+        for (const item of sections) {
+          if (item.section.getBoundingClientRect().top <= window.innerHeight / 2) current = item;
+          else break;
+        }
+
+        for (const item of sections) {
+          if (item === current) item.link.setAttribute("aria-current", "location");
+          else item.link.removeAttribute("aria-current");
+        }
+      };
+
+      let updateScheduled = false;
+      window.addEventListener("scroll", () => {
+        if (updateScheduled) return;
+        updateScheduled = true;
+        window.requestAnimationFrame(() => {
+          updateScheduled = false;
+          updateCurrentSection();
+        });
+      }, { passive: true });
+      window.addEventListener("resize", updateCurrentSection);
+      updateCurrentSection();
+    }
+  </script>
+
   <style>
-    .post-meta {
-      column-gap: 0.55rem;
+    .article-has-toc {
+      --article-body-width: 49rem;
+      --article-toc-width: 11rem;
+      --article-column-gap: 5rem;
     }
 
-    /* The byline is a sentence, not a list of dotted items, so it lays out as
-       inline text and keeps normal word spacing instead of the flex gap. */
-    .post-meta__byline {
-      display: inline;
+    .article-has-toc .article-header {
+      max-width: calc(var(--article-body-width) + var(--article-toc-width) + var(--article-column-gap));
     }
 
-    .post-meta__link {
-      color: var(--foreground);
+    .article-header .article-title {
+      text-wrap: wrap;
     }
 
-    /* Mirrors `.meta > *`: the dot only takes its 2px box inside a flex item. */
-    .post-meta__dates > * {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
+    .article-reading-layout {
+      display: grid;
+      grid-template-columns: minmax(0, var(--layout-content));
+      grid-template-areas:
+        "body"
+        "navigation";
+      justify-content: center;
+      align-items: start;
     }
 
-    .post-meta__dates > * + *::before {
-      width: 2px;
-      height: 2px;
-      content: "";
-      background: var(--muted-foreground);
-      border-radius: 50%;
-    }
-
-    /* Once the row no longer fits, date and read time drop to a line of their
-       own rather than orphaning the read time under the byline. */
-    @media (max-width: 40rem) {
-      .post-meta__dates {
-        flex-basis: 100%;
-      }
-
-      .post-meta__dates::before {
-        display: none;
-      }
-    }
-
-    .article-title {
-      margin: 1.25rem 0 0;
-      font-family: var(--font-display);
-      font-size: clamp(2.25rem, 6.5vw, 4rem);
-      font-weight: 600;
-      letter-spacing: -0.035em;
-      line-height: 1.02;
-      text-wrap: balance;
-      word-break: break-word;
-    }
-
-    .article-excerpt {
-      margin: 1.25rem 0 0;
-      color: color-mix(in srgb, var(--foreground) 82%, transparent);
-      font-size: clamp(1.125rem, 2.4vw, 1.4rem);
-      line-height: 1.45;
-      text-wrap: pretty;
-    }
-
-    /* Only the block margins are set here: the inline `auto` margins come from
-       `.inner` and must survive, or the wide feature image stops centering. */
-    .article-image {
-      margin-top: 3rem;
-      margin-bottom: 0;
-    }
-
-    /* Capped so an unusually tall cover cannot push the article's first
-       paragraph below the fold. */
-    .article-image :global(img) {
-      max-height: 32rem;
+    .article-reading-layout--with-toc {
       width: 100%;
-      object-fit: cover;
-      border-radius: var(--radius-md);
+      max-width: calc(var(--article-body-width) + var(--article-toc-width) + var(--article-column-gap));
+      grid-template-columns: minmax(0, var(--article-body-width)) minmax(0, var(--article-toc-width));
+      grid-template-areas:
+        "body toc"
+        "navigation .";
+      column-gap: var(--article-column-gap);
+    }
+
+    .article-toc {
+      position: sticky;
+      top: 5rem;
+      grid-area: toc;
+      align-self: start;
+      max-height: calc(100vh - 6rem);
+      overflow-y: auto;
+      margin-top: 3rem;
+      margin-bottom: 8rem;
+      border-left: 1px solid var(--border);
+      padding-left: 1rem;
     }
 
     .article-image figcaption {
-      max-width: var(--layout-content);
-      margin: 0.75rem auto 0;
-      color: var(--muted-foreground);
-      font-size: 0.8125rem;
+      margin-left: max(0px, min(5rem, calc((100% - 65rem) / 2)));
+      margin-right: auto;
     }
 
-    .share-btn {
-      display: inline-grid;
-      width: 2.5rem;
-      height: 2.5rem;
-      place-items: center;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted-foreground);
-      cursor: pointer;
+    .article-toc h2 {
+      margin: 0 0 0.75rem;
+    }
+
+    .article-toc ol {
+      display: grid;
+      gap: 0.4rem;
+      margin: 0;
       padding: 0;
-      border-radius: var(--radius-full);
-      transition:
-        border-color var(--duration) var(--ease-out),
-        color var(--duration) var(--ease-out),
-        transform var(--duration) var(--ease-out);
+      list-style: none;
     }
 
-    .share-btn:hover,
-    .share-btn:focus-visible {
-      border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+    .article-toc a {
+      display: block;
+      border-left: 2px solid transparent;
+      margin-left: -1.0625rem;
+      padding: 0.1rem 0 0.1rem 0.9rem;
+      color: var(--muted-foreground);
+      font-size: 0.6875rem;
+      line-height: 1.4;
+      text-decoration: none;
+      transition:
+        border-color var(--duration-fast) var(--ease-out),
+        color var(--duration-fast) var(--ease-out);
+    }
+
+    .article-toc-item--nested a {
+      padding-left: 1.5rem;
+    }
+
+    .article-toc a:hover,
+    .article-toc a:focus-visible,
+    .article-toc a[aria-current="location"] {
+      border-left-color: var(--accent);
       color: var(--accent);
-      transform: translateY(-2px);
+    }
+
+    .article-body {
+      grid-area: body;
+    }
+
+    .article-reading-layout--with-toc .article-body,
+    .article-reading-layout--with-toc .article-navigation {
+      max-width: none;
+      margin-inline: 0;
+    }
+
+    .article-navigation {
+      grid-area: navigation;
+    }
+
+    .article-has-toc + .article-related {
+      --article-body-width: 49rem;
+      --article-toc-width: 11rem;
+      --article-column-gap: 5rem;
+      max-width: var(--article-body-width);
+      margin-left: max(0px, calc((100% - (var(--article-body-width) + var(--article-toc-width) + var(--article-column-gap))) / 2));
+      margin-right: auto;
+    }
+
+    @media (max-width: 68rem) {
+      .article-image figcaption {
+        margin-left: max(0px, min(15rem, calc((100% - var(--layout-content)) / 2)));
+      }
+
+      .article-has-toc {
+        --article-body-width: var(--layout-content);
+        --article-toc-width: 10rem;
+        --article-column-gap: 2rem;
+      }
+
+      .article-has-toc .article-header {
+        max-width: var(--layout-content);
+      }
+
+      .article-reading-layout--with-toc {
+        grid-template-columns: minmax(0, var(--layout-content));
+        grid-template-areas:
+          "toc"
+          "body"
+          "navigation";
+      }
+
+      .article-toc {
+        position: static;
+        max-height: none;
+        margin-top: 2rem;
+      }
+
+      .article-has-toc + .article-related {
+        max-width: var(--layout-content);
+        margin-inline: auto;
+      }
+    }
+
+    @media (max-width: 48rem) {
+      .article-toc {
+        margin-inline: 0;
+      }
     }
   </style>
+
 </BaseLayout>

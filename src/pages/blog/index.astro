@@ -5,14 +5,17 @@ import SiteFooter from "@/components/SiteFooter.astro";
 import SiteHeader from "@/components/SiteHeader.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { siteConfig } from "@/config/site";
-import { categoryHref, getCategoryList, getFeatured, visiblePosts } from "@/lib/posts";
+import { logHref, sortedLogs } from "@/lib/logs";
+import { categoryHref, formatDate, getCategoryList, getFeatured, visiblePosts } from "@/lib/posts";
 
 const allPosts = visiblePosts(await getCollection("posts"));
+const logs = sortedLogs(await getCollection("logs"));
 const [latest, ...rest] = allPosts;
 const feed = rest.slice(0, 8);
 const featured = getFeatured(allPosts, 4).filter((post) => post.id !== latest?.id);
 const categoryList = getCategoryList(allPosts);
 const hasMore = rest.length > feed.length;
+const latestLogs = logs.slice(0, 8);
 ---
 
 <BaseLayout>
@@ -45,6 +48,26 @@ const hasMore = rest.length > feed.length;
         </section>
 
         <aside class="sidebar">
+          <section aria-labelledby="logs-heading">
+            <h2 id="logs-heading" class="section-title">Study logs</h2>
+            {latestLogs.length > 0 ? (
+              <ul class="logs-list">
+                {latestLogs.map((log) => (
+                  <li class="logs-list-item">
+                    <a href={logHref(log)} class="logs-list-link">
+                      <time datetime={log.data.date.toISOString()}>{formatDate(log.data.date)}</time>
+                      <p class="logs-list-title">{log.data.title}</p>
+                      {log.data.excerpt && <p class="logs-list-excerpt">{log.data.excerpt}</p>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p class="text-sm text-muted-foreground">Study logs are coming soon.</p>
+            )}
+            <a href="/blog/logs/" class="btn btn-outline btn-block mt-6">More...</a>
+          </section>
+
           <section aria-labelledby="about-heading">
             <h2 id="about-heading" class="section-title">About</h2>
             <p class="text-lg font-semibold tracking-tight">{siteConfig.name}</p>
@@ -69,5 +92,52 @@ const hasMore = rest.length > feed.length;
 <style>
   .main-container {
     min-height: calc(100vh - 220px);
+  }
+
+  .logs-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .logs-list-item {
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logs-list-item:first-child {
+    padding-top: 0;
+  }
+
+  .logs-list-link {
+    display: block;
+    text-decoration: none;
+  }
+
+  .logs-list-link:hover .logs-list-title,
+  .logs-list-link:focus-visible .logs-list-title {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .logs-list-item time {
+    color: var(--accent);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .logs-list-title {
+    margin: 0.25rem 0 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .logs-list-excerpt {
+    margin: 0.3rem 0 0;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    line-height: 1.5;
   }
 </style>

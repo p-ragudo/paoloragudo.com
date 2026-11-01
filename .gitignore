@@ -1,5 +1,9 @@
 # Logs
 logs
+!src/content/logs/
+!src/content/logs/**
+!src/pages/blog/logs/
+!src/pages/blog/logs/**
 *.log
 npm-debug.log*
 yarn-debug.log*

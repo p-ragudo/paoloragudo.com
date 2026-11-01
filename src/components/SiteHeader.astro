@@ -27,9 +27,8 @@ const isCurrentPath = (href: string) => {
   // 1. Exact match (e.g. /blog matches /blog, /blog/posts matches /blog/posts)
   if (current === target) return true;
 
-  // 2. Highlight "BLOG" only on single posts (/blog/post/slug-name)
-  // Notice the trailing slash so "posts" is never matched!
-  if (target === '/blog' && (currentPath === '/blog/posts' || currentPath.startsWith('/blog/posts/'))) {
+  // Keep Blog active for nested sections, posts, and archive pages.
+  if (target === '/blog' && current.startsWith('/blog/')) {
     return true;
   }
 

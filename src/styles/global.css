@@ -244,6 +244,104 @@
     text-wrap: pretty;
   }
 
+  .post-meta {
+    column-gap: 0.55rem;
+  }
+
+  .post-meta__byline {
+    display: inline;
+  }
+
+  .post-meta__link {
+    color: var(--foreground);
+  }
+
+  .post-meta__dates > * {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .post-meta__dates > * + *::before {
+    width: 2px;
+    height: 2px;
+    content: "";
+    background: var(--muted-foreground);
+    border-radius: 50%;
+  }
+
+  @media (max-width: 40rem) {
+    .post-meta__dates {
+      flex-basis: 100%;
+    }
+
+    .post-meta__dates::before {
+      display: none;
+    }
+  }
+
+  .article-title {
+    margin: 1.25rem 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 6.5vw, 4rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    text-wrap: balance;
+    word-break: break-word;
+  }
+
+  .article-excerpt {
+    margin: 1.25rem 0 0;
+    color: color-mix(in srgb, var(--foreground) 82%, transparent);
+    font-size: clamp(1.125rem, 2.4vw, 1.4rem);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+
+  .article-image {
+    margin-top: 3rem;
+    margin-bottom: 0;
+  }
+
+  .article-image img {
+    max-height: 32rem;
+    width: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+  }
+
+  .article-image figcaption {
+    max-width: var(--layout-content);
+    margin: 0.75rem auto 0;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+  }
+
+  .share-btn {
+    display: inline-grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    place-items: center;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    padding: 0;
+    border-radius: var(--radius-full);
+    transition:
+      border-color var(--duration) var(--ease-out),
+      color var(--duration) var(--ease-out),
+      transform var(--duration) var(--ease-out);
+  }
+
+  .share-btn:hover,
+  .share-btn:focus-visible {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+    color: var(--accent);
+    transform: translateY(-2px);
+  }
+
   .skip-link {
     position: fixed;
     left: 1rem;

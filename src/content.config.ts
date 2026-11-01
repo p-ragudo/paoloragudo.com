@@ -35,4 +35,26 @@ const posts = defineCollection({
     }),
 });
 
-export const collections = { posts };
+const logs = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/logs" }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      excerpt: z.string().optional(),
+      date: z.coerce.date(),
+      author: z.object({
+        name: z.string(),
+        role: z.string(),
+      }),
+      cover: z
+        .object({
+          src: image(),
+          alt: z.string(),
+          creditName: z.string().optional(),
+          creditUrl: z.url().optional(),
+        })
+        .optional(),
+    }),
+});
+
+export const collections = { posts, logs };
