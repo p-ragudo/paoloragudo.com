@@ -306,7 +306,7 @@ const structuredData = {
         let current = sections[0];
 
         for (const item of sections) {
-          if (item.section.getBoundingClientRect().top <= window.innerHeight / 2) current = item;
+          if (item.section.getBoundingClientRect().top <= window.innerHeight * 0.8) current = item;
           else break;
         }
 
