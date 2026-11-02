@@ -7,7 +7,7 @@ import SiteHeader from "@/components/SiteHeader.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { siteConfig } from "@/config/site";
 import { formatDate, visiblePosts } from "@/lib/posts";
-import { logHref, logSlug, sortedLogs, type Log } from "@/lib/logs";
+import { getAdjacentLogs, logHref, logSlug, sortedLogs, type Log } from "@/lib/logs";
 
 export async function getStaticPaths() {
   const logs = sortedLogs(await getCollection("logs"));
@@ -15,18 +15,20 @@ export async function getStaticPaths() {
 
   return logs.map((log) => ({
     params: { slug: logSlug(log) },
-    props: { log, allPosts },
+    props: { log, allPosts, allLogs: logs },
   }));
 }
 
 interface Props {
   log: Log;
   allPosts: Awaited<ReturnType<typeof getCollection<"posts">>>;
+  allLogs: Log[];
 }
 
-const { log, allPosts } = Astro.props;
+const { log, allPosts, allLogs } = Astro.props;
 const { Content } = await render(log);
 const { title, excerpt, date, project, projectUrl, series, seriesUrl, studyTime, author, cover } = log.data;
+const { newer, older } = getAdjacentLogs(allLogs, log);
 const articleUrl = new URL(logHref(log), siteConfig.siteUrl).toString();
 const socialImage = cover
   ? new URL(cover.src.src, siteConfig.siteUrl).toString()
@@ -164,6 +166,33 @@ const structuredData = {
         <div class="prose canvas mt-12">
           <Content />
         </div>
+
+        {(newer || older) && (
+          <footer class="canvas article-navigation mt-16 border-t border-border pt-8">
+            <nav class="grid gap-8 sm:grid-cols-2" aria-label="Study log navigation">
+              <div>
+                {older && (
+                  <a href={logHref(older)} class="link-title link-nudge">
+                    <span class="eyebrow">
+                      <span class="link-nudge__arrow link-nudge__arrow--prev">&larr;</span> Previous
+                    </span>
+                    <span class="link-title__text mt-2 block font-semibold leading-snug">{older.data.title}</span>
+                  </a>
+                )}
+              </div>
+              <div class="sm:text-right">
+                {newer && (
+                  <a href={logHref(newer)} class="link-title link-nudge">
+                    <span class="eyebrow">
+                      Next <span class="link-nudge__arrow link-nudge__arrow--next">&rarr;</span>
+                    </span>
+                    <span class="link-title__text mt-2 block font-semibold leading-snug">{newer.data.title}</span>
+                  </a>
+                )}
+              </div>
+            </nav>
+          </footer>
+        )}
       </article>
     </main>
     <SiteFooter />
