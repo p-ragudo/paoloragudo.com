@@ -75,9 +75,13 @@ const structuredData = {
     <main id="content" class="outer logs-page">
       <article>
         <header class="canvas pt-10 md:pt-14">
-          <a href="/blog/logs/" class="nav-link link-nudge mb-5 inline-flex items-center gap-1">
-            <span class="link-nudge__arrow link-nudge__arrow--prev" aria-hidden="true">&larr;</span> Study logs
-          </a>
+          <nav aria-label="Breadcrumb" class="mb-5">
+            <ol class="flex items-center gap-2 text-xs font-medium uppercase text-muted-foreground">
+              <li><a href="/blog/" class="nav-link link-quiet">Blog</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="/blog/logs/" class="nav-link link-quiet">Study Logs</a></li>
+            </ol>
+          </nav>
           <p class="meta post-meta">
             <span class="post-meta__byline">By {author.name}</span>
             <span class="post-meta__dates">

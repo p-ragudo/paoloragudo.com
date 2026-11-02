@@ -93,9 +93,11 @@ const structuredData = {
   <main id="content" class="outer">
     <article class:list={tableOfContents.length > 0 ? ["article-has-toc"] : []}>
       <header class="article-header canvas pt-10 md:pt-14">
-        <a href="/blog/" class="nav-link link-nudge mb-5 inline-flex items-center gap-1">
-          <span class="link-nudge__arrow link-nudge__arrow--prev" aria-hidden="true">&larr;</span> Blog
-        </a>
+        <nav aria-label="Breadcrumb" class="mb-5">
+          <ol class="flex items-center gap-2 text-xs font-medium uppercase text-muted-foreground">
+            <li><a href="/blog/" class="nav-link link-quiet">Blog</a></li>
+          </ol>
+        </nav>
         <p class="meta post-meta">
           <span class="post-meta__byline">
             By <a href={authorHref} class="link-sweep post-meta__link">{data.author.name}</a> in{" "}
