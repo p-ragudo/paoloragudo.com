@@ -42,6 +42,11 @@ const logs = defineCollection({
       title: z.string(),
       excerpt: z.string().optional(),
       date: z.coerce.date(),
+      project: z.string().optional(),
+      projectUrl: z.url().optional(),
+      series: z.string().optional(),
+      seriesUrl: z.url().optional(),
+      studyTime: z.string().optional(),
       author: z.object({
         name: z.string(),
         role: z.string(),

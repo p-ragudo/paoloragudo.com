@@ -26,7 +26,7 @@ interface Props {
 
 const { log, allPosts } = Astro.props;
 const { Content } = await render(log);
-const { title, excerpt, date, author, cover } = log.data;
+const { title, excerpt, date, project, projectUrl, series, seriesUrl, studyTime, author, cover } = log.data;
 const articleUrl = new URL(logHref(log), siteConfig.siteUrl).toString();
 const socialImage = cover
   ? new URL(cover.src.src, siteConfig.siteUrl).toString()
@@ -86,6 +86,25 @@ const structuredData = {
           </p>
           <h1 class="article-title">{title}</h1>
           {excerpt && <p class="article-excerpt">{excerpt}</p>}
+          {(project || series || studyTime) && (
+            <div class="log-metadata">
+              {project && (
+                <p class="meta log-metadata-item">
+                  <span><strong class="log-metadata-label">Project:</strong> {projectUrl ? <a href={projectUrl} class="log-metadata-link">{project}</a> : project}</span>
+                </p>
+              )}
+              {series && (
+                <p class="meta log-metadata-item">
+                  <span><strong class="log-metadata-label">Series:</strong> {seriesUrl ? <a href={seriesUrl} class="log-metadata-link">{series}</a> : series}</span>
+                </p>
+              )}
+              {studyTime && (
+                <p class="meta log-metadata-item">
+                  <span><strong class="log-metadata-label">Study time:</strong> {studyTime}</span>
+                </p>
+              )}
+            </div>
+          )}
 
           <div class="mt-8 flex flex-wrap items-center gap-2 border-t border-border pt-6" role="group" aria-labelledby="share-heading">
             <h2 id="share-heading" class="eyebrow mr-1">Share</h2>
@@ -175,5 +194,30 @@ const structuredData = {
 
   .logs-page {
     flex: 1;
+  }
+
+  .logs-page .article-excerpt {
+    margin-top: 0.75rem;
+  }
+
+  .log-metadata {
+    display: grid;
+    gap: 0.35rem;
+    margin: 2.5rem 0 0;
+  }
+
+  .log-metadata-item {
+    margin: 0;
+  }
+
+  .log-metadata-label {
+    color: color-mix(in srgb, var(--foreground) 65%, var(--muted-foreground));
+    font-weight: 600;
+  }
+
+  .log-metadata-link {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 </style>

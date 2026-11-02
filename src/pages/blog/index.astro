@@ -15,7 +15,7 @@ const feed = rest.slice(0, 8);
 const featured = getFeatured(allPosts, 4).filter((post) => post.id !== latest?.id);
 const categoryList = getCategoryList(allPosts);
 const hasMore = rest.length > feed.length;
-const latestLogs = logs.slice(0, 8);
+const latestLogs = logs.slice(0, 5);
 ---
 
 <BaseLayout>
