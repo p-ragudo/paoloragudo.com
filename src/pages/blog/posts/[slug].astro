@@ -38,7 +38,9 @@ interface Props {
 
 const { post, allPosts } = Astro.props;
 const { Content, headings } = await render(post);
-const tableOfContents = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const tableOfContents = headings.filter(
+  (heading) => heading.depth === 2 || heading.depth === 3 || heading.depth === 4,
+);
 const hasTableOfContents = tableOfContents.length > 0;
 const mdxComponents = { Callout, CodeGroup, CodeGroupItem };
 const data = post.data;
@@ -176,7 +178,15 @@ const structuredData = {
               <h2 id="article-toc-heading" class="eyebrow">On this page</h2>
               <ol>
                 {tableOfContents.map((heading, index) => (
-                  <li class:list={heading.depth === 3 ? ["article-toc-item--nested"] : []}>
+                  <li
+                    class:list={
+                      heading.depth === 3
+                        ? ["article-toc-item--nested"]
+                        : heading.depth === 4
+                          ? ["article-toc-item--deep"]
+                          : []
+                    }
+                  >
                     <a
                       href={`#${heading.slug}`}
                       data-toc-link
@@ -424,6 +434,14 @@ const structuredData = {
     }
 
     .article-toc-item--nested a {
+      padding-left: 1.5rem;
+    }
+
+    .article-toc-item--deep {
+      margin-left: 0.75rem;
+    }
+
+    .article-toc-item--deep a {
       padding-left: 1.5rem;
     }
 
