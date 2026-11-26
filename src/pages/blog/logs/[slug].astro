@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import { getCollection, render } from "astro:content";
+import Callout from "@/components/mdx/Callout.astro";
 import LocalIcon from "@/components/LocalIcon.astro";
 import SiteFooter from "@/components/SiteFooter.astro";
 import SiteHeader from "@/components/SiteHeader.astro";
@@ -27,6 +28,7 @@ interface Props {
 
 const { log, allPosts, allLogs } = Astro.props;
 const { Content } = await render(log);
+const mdxComponents = { Callout };
 const { title, excerpt, date, project, projectUrl, series, seriesUrl, studyTime, author, cover } = log.data;
 const { newer, older } = getAdjacentLogs(allLogs, log);
 const articleUrl = new URL(logHref(log), siteConfig.siteUrl).toString();
@@ -164,7 +166,7 @@ const structuredData = {
         )}
 
         <div class="prose canvas mt-12">
-          <Content />
+          <Content components={mdxComponents} />
         </div>
 
         {(newer || older) && (
