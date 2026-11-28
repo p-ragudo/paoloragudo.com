@@ -7,7 +7,7 @@ export const siteConfig = {
     "Project walk-throughs, engineering logs, and casual write-ups on building software.",
   siteUrl: "https://paoloragudo.com",
   authorName: "Paolo Ragudo",
-  email: "ragudopaolo@gmail.com",
+  email: "hello@paoloragudo.com",
   language: "en",
   dateLocale: "en-US",
   locale: "en_US",
