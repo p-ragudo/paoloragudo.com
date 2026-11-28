@@ -316,6 +316,7 @@
     margin: 0.75rem auto 0;
     color: var(--muted-foreground);
     font-size: 0.8125rem;
+    text-align: center;
   }
 
   .share-btn {
@@ -909,6 +910,11 @@
     font-style: italic;
     line-height: 1.5;
     color: var(--muted-foreground);
+  }
+
+  .prose figcaption.text-left,
+  .article-image figcaption.text-left {
+    text-align: left;
   }
 
   .prose code {

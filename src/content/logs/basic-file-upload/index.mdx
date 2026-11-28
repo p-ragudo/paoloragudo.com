@@ -1,0 +1,103 @@
+---
+title: Basic File Upload
+excerpt: Implementation of a simple file upload
+date: 2026-11-28
+
+project: "Markdown Note-taking App"
+projectUrl: "https://github.com/p-ragudo/backend-projects"
+series: "20 Backend Projects Roadmap"
+seriesUrl: "https://roadmap.sh/backend/project-ideas"
+studyTime: "1hr"
+
+author:
+    name: "Paolo Ragudo"
+    role: "Software Engineer and Writer"
+---
+
+## Tutorial Blog I found
+
+Today I found a [blog](https://blog.elmah.io/how-to-upload-files-in-an-asp-net-core-web-api/) with a tutorial on implementing a simple file upload.
+
+![screenshot of file upload tutorial blog on uploading files in a .NET API](./tutorial_blog.png)
+<figcaption>Screenshot of file upload tutorial blog on uploading files in a .NET web API.</figcaption>
+
+<div class="mb-16" />
+
+After reading through it, I made a simple controller with a basic file upload setup, following the code in the blog:
+
+```csharp
+using Microsoft.AspNetCore.Mvc;
+
+namespace MarkdownNoteTakingApp.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class FilesController : ControllerBase
+{
+    [HttpPost("upload")]
+    public async Task<IActionResult> Upload(IFormFile file)
+    {
+        if (file == null | file.Length == 0)
+            return BadRequest("No file uploaded");
+
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+
+        if (!Directory.Exists(uploadsFolder))
+            Directory.CreateDirectory(uploadsFolder);
+
+        var filePath = Path.Combine(uploadsFolder, file.FileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        return Ok(new { file.FileName, file.Length });
+    }
+}
+```
+This is a basic file upload setup. I just wanted to get it working first and understand how the process works. After that, we can add things as needed.
+
+## Sample output
+
+I tested the endpoint on postman and uploaded a file. Here is the result:
+
+![screenshot of postman sample output of the file upload endpoint](./postman_output.png)
+
+It created a new Uploads directory within the API and saved the file within that folder:
+
+![screenshot of the newly created Uploads directory within a .NET web api](./new_directory.png)
+
+![screenshot of the uploaded file](./uploaded_file.png)
+
+And here we see the uploaded image.
+
+<div class="mb-16" />
+
+## What it doesn't have yet
+
+The tutorial only stores files locally, or the directory that the API uses. It does not cover storing the files in a third-party storage or filesystem.
+
+This is a really simple implementation, and does not cover security, file type restrictions, size limits, and other considerations.
+
+For this project, I'm planning to have two storage types: a filesystem such as Azure Blog, and a relational store for metadata.
+
+<Callout>
+My setup is fully on the cloud. I use GitHub codespace for my editor, the Postman web app, and everything else. So I really do have to use cloud services in all my projects, not locally.
+</Callout>
+
+For the next sessions, I'm gonna implement file type and size limits, and then maybe figure out how to get those files into a separate file system or storage.
+
+---
+
+That's it for today's logs. See you in the next sessions!
+
+Blog will be coming out soon, which will mainly be about the file uploading part of this project. That's the first step!
+
+<div class="mb-16" />
+
+<figcaption class="text-left">
+**Small side-note**: Our cat was in the way in the whole session, so that 1hr study time might've been around only 45 minutes!
+</figcaption>
+
+![image of cat in front of monitor](./cat_image.jpeg)
